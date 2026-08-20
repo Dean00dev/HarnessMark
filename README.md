@@ -57,7 +57,7 @@ permissions:
 steps:
   - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
   - name: Test agent-extension compatibility
-    uses: Dean00dev/HarnessMark@v0
+    uses: Dean00dev/HarnessMark@v0.1.0-alpha.1
     with:
       path: .
       config: harnessmark.yml
