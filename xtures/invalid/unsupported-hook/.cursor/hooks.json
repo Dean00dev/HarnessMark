@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "command": "node hooks/check.mjs"
+      }
+    ]
+  }
+}
+

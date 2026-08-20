@@ -1,0 +1,6 @@
+{
+  "name": "portable-release-guard",
+  "version": "1.0.0",
+  "description": "A release-verification fixture for Codex."
+}
+

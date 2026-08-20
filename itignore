@@ -1,0 +1,6 @@
+node_modules/
+coverage/
+*.tgz
+*.sarif
+*.junit.xml
+.harnessmark/

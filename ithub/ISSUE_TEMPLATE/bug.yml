@@ -1,0 +1,39 @@
+name: False positive or missed finding
+description: Report a case where HarnessMark accepted or rejected the wrong thing.
+title: "[finding] "
+labels: [bug, conformance]
+body:
+  - type: markdown
+    attributes:
+      value: Never include secrets or private extension content. A minimal public fixture is best.
+  - type: dropdown
+    id: host
+    attributes:
+      label: Host format
+      options: [Codex, Claude Code, Cursor, GitHub Copilot, Agent Skills, Agent Plugins, Multiple]
+    validations:
+      required: true
+  - type: input
+    id: rule
+    attributes:
+      label: HarnessMark rule
+      placeholder: HM031
+  - type: textarea
+    id: fixture
+    attributes:
+      label: Minimal reproducer
+      description: Paste a small file tree and sanitized file contents, or link a public fixture.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual result
+    validations:
+      required: true
+  - type: input
+    id: fingerprint
+    attributes:
+      label: Input fingerprint
+      placeholder: sha256:...
+

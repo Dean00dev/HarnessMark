@@ -1,0 +1,10 @@
+schema: 1
+name: portable-release-guard
+root: .
+targets:
+  - codex
+  - claude-code
+  - cursor
+  - github-copilot
+fail_on: error
+

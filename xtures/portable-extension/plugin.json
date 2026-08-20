@@ -1,0 +1,15 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "portable-release-guard",
+  "version": "1.0.0",
+  "description": "A portable release verification extension.",
+  "author": {
+    "name": "HarnessMark fixtures"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "release",
+    "verification"
+  ]
+}
+

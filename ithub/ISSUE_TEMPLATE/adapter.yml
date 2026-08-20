@@ -1,0 +1,31 @@
+name: Host adapter request
+description: Propose another agent harness with first-party format documentation.
+title: "[adapter] "
+labels: [enhancement, adapter]
+body:
+  - type: input
+    id: host
+    attributes:
+      label: Harness or host
+    validations:
+      required: true
+  - type: input
+    id: docs
+    attributes:
+      label: First-party specification or documentation
+      placeholder: https://...
+    validations:
+      required: true
+  - type: textarea
+    id: artifacts
+    attributes:
+      label: Artifact locations and required fields
+    validations:
+      required: true
+  - type: textarea
+    id: drift
+    attributes:
+      label: What incompatibility would this catch?
+    validations:
+      required: true
+

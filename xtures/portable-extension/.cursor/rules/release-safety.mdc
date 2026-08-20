@@ -1,0 +1,8 @@
+---
+description: Apply the release-safety checklist when release artifacts change.
+globs: "CHANGELOG.md,package.json,.github/workflows/**"
+alwaysApply: false
+---
+
+Use the `release-safety` skill. Distinguish inspected evidence from commands actually executed.
+

@@ -1,0 +1,9 @@
+changelog:
+  categories:
+    - title: Host adapters
+      labels: [adapter]
+    - title: Conformance fixes
+      labels: [bug, conformance]
+    - title: Other changes
+      labels: ["*"]
+

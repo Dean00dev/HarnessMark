@@ -1,0 +1,9 @@
+schema: 1
+name: harnessmark-portable-fixture
+root: fixtures/portable-extension
+targets:
+  - codex
+  - claude-code
+  - cursor
+  - github-copilot
+fail_on: error

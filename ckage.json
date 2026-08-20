@@ -1,0 +1,46 @@
+{
+  "name": "harnessmark",
+  "version": "0.1.0-alpha.1",
+  "description": "Cross-harness conformance tests for AI-agent skills, plugins, hooks, and instruction packs.",
+  "type": "module",
+  "bin": {
+    "harnessmark": "src/cli.js"
+  },
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "action.yml",
+    "src/",
+    "docs/",
+    "LICENSE",
+    "README.md",
+    "SECURITY.md"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "campaign": "node scripts/run-campaign.js",
+    "selfcheck": "node src/cli.js check fixtures/portable-extension --config fixtures/portable-extension/harnessmark.yml --fail-on error",
+    "demo": "node src/cli.js check fixtures/portable-extension --config fixtures/portable-extension/harnessmark.yml --format html --output assets/demo-passport.html",
+    "verify": "npm run test && npm run campaign && npm run selfcheck && npm pack --dry-run"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "ai-agents",
+    "agent-skills",
+    "codex",
+    "claude-code",
+    "cursor",
+    "github-copilot",
+    "conformance-testing",
+    "github-actions"
+  ],
+  "author": "Dean Egan",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dean00dev/HarnessMark.git"
+  }
+}

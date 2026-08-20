@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Node ${{ matrix.node }} · ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node: [20, 22, 24]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Use Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ matrix.node }}
+          package-manager-cache: false
+      - name: Run tests
+        run: node --test
+
+  action-smoke:
+    name: Action · ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Run HarnessMark as an Action
+        id: harnessmark
+        uses: ./
+        with:
+          path: fixtures/portable-extension
+          config: fixtures/portable-extension/harnessmark.yml
+          format: html
+          output: harnessmark-passport.html
+          annotations: false
+      - name: Verify outputs and report
+        shell: bash
+        run: |
+          test "${{ steps.harnessmark.outputs.result }}" = "pass"
+          test "${{ steps.harnessmark.outputs.errors }}" = "0"
+          test -s harnessmark-passport.html
+
+  campaign:
+    name: Adversarial campaign
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Run isolated rejection fixtures
+        run: node scripts/run-campaign.js
+      - name: Verify package contents
+        env:
+          npm_config_offline: "true"
+          npm_config_update_notifier: "false"
+          npm_config_audit: "false"
+        run: npm pack --dry-run
+
