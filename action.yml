@@ -29,6 +29,18 @@ inputs:
     description: Emit GitHub workflow annotations.
     required: false
     default: "true"
+  compare-lock:
+    description: Optional saved HarnessMark conformance lock to compare against.
+    required: false
+    default: ""
+  lock-output:
+    description: Optional path to write the current deterministic conformance lock.
+    required: false
+    default: ""
+  fail-on-lock-drift:
+    description: Drift gate for the saved lock (any, warning, error, or none).
+    required: false
+    default: any
 outputs:
   result:
     description: pass, warn, or fail.
@@ -38,6 +50,12 @@ outputs:
     description: Number of warning findings.
   report:
     description: Path to the generated report.
+  lock-digest:
+    description: SHA-256 digest of the current compatibility contract.
+  lock-events:
+    description: Number of conformance-lock drift events.
+  lock-drift:
+    description: not-configured, stable, changed, or failed.
 runs:
-  using: node20
+  using: node24
   main: src/action.js

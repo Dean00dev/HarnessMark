@@ -1,5 +1,5 @@
-export const TOOL_VERSION = "0.1.0-alpha.1";
-export const EVIDENCE_CHECKED_AT = "2026-08-20";
+export const TOOL_VERSION = "1.0.0";
+export const EVIDENCE_CHECKED_AT = "2026-08-25";
 
 export const HOST_ORDER = ["codex", "claude-code", "cursor", "github-copilot"];
 
@@ -48,8 +48,9 @@ export const HOSTS = Object.freeze({
       "sessionStart", "sessionEnd", "preToolUse", "postToolUse",
       "postToolUseFailure", "subagentStart", "subagentStop",
       "beforeShellExecution", "afterShellExecution", "beforeMCPExecution",
-      "afterMCPExecution", "beforeReadFile", "afterFileEdit", "preCompact",
-      "stop", "beforeTabFileRead", "afterTabFileEdit", "workspaceOpen"
+      "afterMCPExecution", "beforeReadFile", "afterFileEdit", "beforeSubmitPrompt",
+      "preCompact", "stop", "afterAgentResponse", "afterAgentThought",
+      "beforeTabFileRead", "afterTabFileEdit", "workspaceOpen"
     ])
   },
   "github-copilot": {

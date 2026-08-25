@@ -1,6 +1,6 @@
 {
   "name": "harnessmark",
-  "version": "0.1.0-alpha.1",
+  "version": "1.0.0",
   "description": "Cross-harness conformance tests for AI-agent skills, plugins, hooks, and instruction packs.",
   "type": "module",
   "bin": {
@@ -22,6 +22,7 @@
     "campaign": "node scripts/run-campaign.js",
     "selfcheck": "node src/cli.js check fixtures/portable-extension --config fixtures/portable-extension/harnessmark.yml --fail-on error",
     "demo": "node src/cli.js check fixtures/portable-extension --config fixtures/portable-extension/harnessmark.yml --format html --output assets/demo-passport.html",
+    "lockcheck": "node src/cli.js check fixtures/portable-extension --config fixtures/portable-extension/harnessmark.yml --write-lock .harnessmark-lock.json --fail-on none",
     "verify": "npm run test && npm run campaign && npm run selfcheck && npm pack --dry-run"
   },
   "engines": {
