@@ -23,8 +23,23 @@ function stableFinding(item) {
   };
 }
 
+function contractState(value) {
+  return {
+    assurance: value.assurance,
+    project: value.project,
+    targets: value.targets,
+    coreArtifacts: value.coreArtifacts,
+    hosts: value.hosts,
+    findings: value.findings
+  };
+}
+
+function digestContract(value) {
+  return `sha256:${crypto.createHash("sha256").update(JSON.stringify(contractState(value))).digest("hex")}`;
+}
+
 export function lockPayload(result) {
-  const contract = {
+  const payload = {
     schema: LOCK_SCHEMA,
     tool: { name: "HarnessMark", version: result.tool.version },
     assurance: result.assurance.level,
@@ -34,11 +49,7 @@ export function lockPayload(result) {
     hosts: result.hosts.map(stableHost),
     findings: result.findings.map(stableFinding)
   };
-  const canonical = JSON.stringify(contract);
-  return {
-    ...contract,
-    contractDigest: `sha256:${crypto.createHash("sha256").update(canonical).digest("hex")}`
-  };
+  return { ...payload, contractDigest: digestContract(payload) };
 }
 
 export function renderLock(result) {
@@ -61,15 +72,14 @@ export function validateLock(value) {
   if (!value || Array.isArray(value) || typeof value !== "object") throw new Error("conformance lock must be a JSON object");
   if (value.schema !== LOCK_SCHEMA) throw new Error(`unsupported conformance lock schema '${value.schema}'`);
   if (value.tool?.name !== "HarnessMark" || typeof value.tool.version !== "string") throw new Error("conformance lock has invalid tool metadata");
+  if (typeof value.assurance !== "string" || !value.project || typeof value.project.name !== "string") throw new Error("conformance lock has invalid project metadata");
   if (!Array.isArray(value.targets) || !Array.isArray(value.coreArtifacts) || !Array.isArray(value.hosts) || !Array.isArray(value.findings)) {
     throw new Error("conformance lock is missing required arrays");
   }
   if (typeof value.contractDigest !== "string" || !/^sha256:[0-9a-f]{64}$/.test(value.contractDigest)) {
     throw new Error("conformance lock has invalid contractDigest");
   }
-  const { contractDigest, ...contract } = value;
-  const expected = `sha256:${crypto.createHash("sha256").update(JSON.stringify(contract)).digest("hex")}`;
-  if (contractDigest !== expected) throw new Error("conformance lock contractDigest does not match its contents");
+  if (value.contractDigest !== digestContract(value)) throw new Error("conformance lock contractDigest does not match its contents");
 }
 
 export function compareLock(previous, result) {
