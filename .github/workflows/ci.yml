@@ -39,6 +39,8 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Generate reviewed lock baseline
+        run: node src/cli.js check fixtures/portable-extension --config fixtures/portable-extension/harnessmark.yml --write-lock harnessmark.lock.json --fail-on none
       - name: Run HarnessMark as an Action
         id: harnessmark
         uses: ./
@@ -48,12 +50,25 @@ jobs:
           format: html
           output: harnessmark-passport.html
           annotations: false
-      - name: Verify outputs and report
+          compare-lock: harnessmark.lock.json
+          lock-output: current-harnessmark.lock.json
+          fail-on-lock-drift: any
+      - name: Verify outputs, report, and lock
         shell: bash
+        env:
+          HM_RESULT: ${{ steps.harnessmark.outputs.result }}
+          HM_ERRORS: ${{ steps.harnessmark.outputs.errors }}
+          HM_LOCK_DRIFT: ${{ steps.harnessmark.outputs.lock-drift }}
+          HM_LOCK_EVENTS: ${{ steps.harnessmark.outputs.lock-events }}
+          HM_LOCK_DIGEST: ${{ steps.harnessmark.outputs.lock-digest }}
         run: |
-          test "${{ steps.harnessmark.outputs.result }}" = "pass"
-          test "${{ steps.harnessmark.outputs.errors }}" = "0"
+          test "$HM_RESULT" = "pass"
+          test "$HM_ERRORS" = "0"
+          test "$HM_LOCK_DRIFT" = "stable"
+          test "$HM_LOCK_EVENTS" = "0"
+          case "$HM_LOCK_DIGEST" in sha256:????????????????????????????????????????????????????????????????) ;; *) exit 1 ;; esac
           test -s harnessmark-passport.html
+          test -s current-harnessmark.lock.json
 
   campaign:
     name: Adversarial campaign
@@ -69,4 +84,3 @@ jobs:
           npm_config_update_notifier: "false"
           npm_config_audit: "false"
         run: npm pack --dry-run
-
