@@ -2,7 +2,7 @@
 
 All notable changes are recorded here.
 
-## 1.0.0 - Unreleased
+## 1.0.0 - 2026-08-25
 
 - Graduate HarnessMark from the first public alpha to the stable v1 contract.
 - Add deterministic Conformance Locks for longitudinal compatibility review.
