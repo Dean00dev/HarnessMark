@@ -68,3 +68,17 @@ test("invalid manifest becomes a deterministic finding", () => {
   assert.equal(result.project.fingerprint, "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
 });
 
+test("current Cursor hook events are accepted", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "harnessmark-cursor-hooks-"));
+  fs.mkdirSync(path.join(root, ".cursor"), { recursive: true });
+  fs.writeFileSync(path.join(root, ".cursor", "hooks.json"), JSON.stringify({
+    version: 1,
+    hooks: {
+      beforeSubmitPrompt: [{ command: "node -e 0" }],
+      afterAgentResponse: [{ command: "node -e 0" }],
+      afterAgentThought: [{ command: "node -e 0" }]
+    }
+  }));
+  const result = analyze(root);
+  assert.equal(result.findings.some(({ ruleId }) => ruleId === "HM031"), false);
+});
