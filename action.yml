@@ -57,5 +57,5 @@ outputs:
   lock-drift:
     description: not-configured, stable, changed, or failed.
 runs:
-  using: node20
+  using: node24
   main: src/action.js
