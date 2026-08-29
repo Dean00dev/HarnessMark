@@ -9,6 +9,7 @@ import { parseFrontmatter } from "./frontmatter.js";
 const SEVERITY_ORDER = Object.freeze({ error: 0, warning: 1, notice: 2 });
 const SKILL_NAME = /^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$/;
 const PLUGIN_NAME = /^[a-z0-9](?:[a-z0-9.-]{0,62}[a-z0-9])?$/;
+const GEMINI_EXTENSION_NAME = /^[a-z0-9-]+$/;
 const AGENT_PLUGIN_SCHEMA = "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json";
 const AGENT_PLUGIN_MCP_SCHEMA = "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json";
 const AGENT_PLUGIN_KEYS = new Set([
@@ -17,10 +18,11 @@ const AGENT_PLUGIN_KEYS = new Set([
 ]);
 
 const SKILL_ROOTS = Object.freeze([
-  { prefix: ".agents/skills/", hosts: ["codex", "cursor", "github-copilot"] },
+  { prefix: ".agents/skills/", hosts: ["codex", "cursor", "gemini-cli", "github-copilot"] },
   { prefix: ".claude/skills/", hosts: ["claude-code", "cursor", "github-copilot"] },
   { prefix: ".cursor/skills/", hosts: ["cursor"] },
   { prefix: ".codex/skills/", hosts: ["cursor"] },
+  { prefix: ".gemini/skills/", hosts: ["gemini-cli"] },
   { prefix: ".github/skills/", hosts: ["github-copilot"] },
   { prefix: "skills/", hosts: [] }
 ]);
@@ -83,15 +85,77 @@ function artifactHosts(relative) {
     hosts.add("claude-code");
     hosts.add("github-copilot");
   }
+  if (relative === "GEMINI.md" || relative.endsWith("/GEMINI.md")) hosts.add("gemini-cli");
   if (relative === "GEMINI.md") hosts.add("github-copilot");
   for (const host of hostsForSkill(relative)) hosts.add(host);
   if (pathIn(relative, ".codex-plugin/") || pathIn(relative, ".codex/")) hosts.add("codex");
   if (pathIn(relative, ".claude-plugin/") || pathIn(relative, ".claude/")) hosts.add("claude-code");
   if (pathIn(relative, ".cursor-plugin/") || pathIn(relative, ".cursor/")) hosts.add("cursor");
+  if (relative === "gemini-extension.json" || pathIn(relative, ".gemini/")) hosts.add("gemini-cli");
   if (relative === ".github/copilot-instructions.md" || pathIn(relative, ".github/instructions/") || pathIn(relative, ".github/skills/")) {
     hosts.add("github-copilot");
   }
   return [...hosts];
+}
+
+function validateGeminiExtension(file, root, findings) {
+  const host = "gemini-cli";
+  const data = parseJson(file, findings, host, "HM070");
+  if (!data) return;
+
+  if (typeof data.name !== "string" || !GEMINI_EXTENSION_NAME.test(data.name)) {
+    findings.push(finding("HM070", "error", host, file.path, 1,
+      "extension name must contain only lowercase letters, digits, or hyphens"));
+  }
+  if (typeof data.version !== "string" || !data.version.trim()) {
+    findings.push(finding("HM070", "error", host, file.path, 1,
+      "extension version must be a non-empty string"));
+  }
+
+  if (data.contextFileName !== undefined) {
+    if (typeof data.contextFileName !== "string" || !data.contextFileName.trim()) {
+      findings.push(finding("HM070", "error", host, file.path, 1,
+        "contextFileName must be a non-empty string"));
+    } else {
+      const checked = safeRelative(root, data.contextFileName);
+      if (!checked.ok) {
+        findings.push(finding("HM071", "error", host, file.path, 1,
+          `contextFileName ${checked.reason}: '${data.contextFileName}'`));
+      } else if (!fs.existsSync(checked.absolute) || !fs.lstatSync(checked.absolute).isFile()) {
+        findings.push(finding("HM072", "error", host, file.path, 1,
+          `contextFileName does not reference a file: '${data.contextFileName}'`));
+      } else if (!fs.readFileSync(checked.absolute, "utf8").trim()) {
+        findings.push(finding("HM060", "error", host, toPosix(path.relative(root, checked.absolute)), 1,
+          "Gemini CLI extension context file is empty"));
+      }
+    }
+  }
+
+  if (data.mcpServers !== undefined) {
+    if (!data.mcpServers || Array.isArray(data.mcpServers) || typeof data.mcpServers !== "object") {
+      findings.push(finding("HM070", "error", host, file.path, 1, "mcpServers must be an object"));
+    } else {
+      for (const [name, server] of Object.entries(data.mcpServers)) {
+        if (!server || Array.isArray(server) || typeof server !== "object") {
+          findings.push(finding("HM070", "error", host, file.path, 1,
+            `MCP server '${name}' must be an object`));
+          continue;
+        }
+        if ("trust" in server) {
+          findings.push(finding("HM070", "error", host, file.path, 1,
+            `MCP server '${name}' uses unsupported extension field 'trust'`));
+        }
+        if (typeof server.command === "string" && /\s/.test(server.command.trim())) {
+          findings.push(finding("HM070", "error", host, file.path, 1,
+            `MCP server '${name}' command must be one executable token; put arguments in args`));
+        }
+        if (server.args !== undefined && !Array.isArray(server.args)) {
+          findings.push(finding("HM070", "error", host, file.path, 1,
+            `MCP server '${name}' args must be an array`));
+        }
+      }
+    }
+  }
 }
 
 function validateSkill(file, text, findings) {
@@ -387,6 +451,7 @@ export function analyze(scanPath = ".", options = {}) {
       validatePlugin(file, root, findings);
       if (file.path === "plugin.json") coreArtifacts.add(file.path);
     }
+    if (file.path === "gemini-extension.json") validateGeminiExtension(file, root, findings);
     if (file.path === "mcp.json" && byPath.has("plugin.json")) {
       validateMcp(file, findings);
       coreArtifacts.add(file.path);
@@ -397,9 +462,22 @@ export function analyze(scanPath = ".", options = {}) {
       if (probe?.hooks) validateHooks(file, root, findings, "claude-code");
     }
     if (file.path === ".cursor/hooks.json") validateHooks(file, root, findings, "cursor");
+    if (file.path === ".gemini/settings.json") {
+      const probe = parseJson(file, findings, "gemini-cli", "HM030");
+      if (probe?.hooks) validateHooks(file, root, findings, "gemini-cli");
+    }
+    if (file.path === "hooks/hooks.json" && byPath.has("gemini-extension.json")) {
+      artifacts["gemini-cli"].add(file.path);
+      validateHooks(file, root, findings, "gemini-cli");
+    }
+    if (pathIn(file.path, "skills/") && byPath.has("gemini-extension.json")) {
+      artifacts["gemini-cli"].add(file.path);
+    }
     if (pathIn(file.path, ".cursor/rules/") && (file.path.endsWith(".mdc") || file.path.endsWith(".md"))) validateCursorRule(file, findings);
     if (pathIn(file.path, ".github/instructions/") && file.path.endsWith(".instructions.md")) validateCopilotInstruction(file, findings);
-    if (["AGENTS.md", "CLAUDE.md", "GEMINI.md", ".github/copilot-instructions.md"].includes(file.path)) validateInstruction(file, findings);
+    if (["AGENTS.md", "CLAUDE.md", ".github/copilot-instructions.md"].includes(file.path)
+      || file.path.endsWith("/AGENTS.md")
+      || file.path === "GEMINI.md" || file.path.endsWith("/GEMINI.md")) validateInstruction(file, findings);
   }
 
   validateMirrors(files.filter((file) => isSkill(file.path)), findings);

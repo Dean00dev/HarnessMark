@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/harnessmark-banner.svg" alt="HarnessMark — one extension, four harnesses, evidence not vibes" width="100%">
+  <img src="assets/harnessmark-banner.svg" alt="HarnessMark — one extension, five harnesses, evidence not vibes" width="100%">
 </p>
 
 <p align="center">
@@ -23,7 +23,8 @@ HOST              STATUS  ARTIFACTS  CLAIMED
 Codex             PASS            4  yes
 Claude Code       PASS            4  yes
 Cursor            PASS            5  yes
-GitHub Copilot    PASS            6  yes
+Gemini CLI        PASS            6  yes
+GitHub Copilot    PASS            7  yes
 
 Result: PASS · 0 errors · 0 warnings
 ```
@@ -38,6 +39,7 @@ Result: PASS · 0 errors · 0 warnings
 - Agent Plugin and host-plugin manifest defects;
 - component paths that escape the package or do not exist;
 - unsupported or wrongly cased hook events;
+- malformed Gemini CLI extension manifests and unsafe or missing context paths;
 - hook commands pointing at missing project files;
 - shell assumptions that reduce Windows portability;
 - Cursor `.md` rules that look valid but are ignored in `.cursor/rules`;
@@ -58,7 +60,7 @@ permissions:
 steps:
   - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
   - name: Test agent-extension compatibility
-    uses: Dean00dev/HarnessMark@v1.0.0
+    uses: Dean00dev/HarnessMark@v1.1.0
     with:
       path: .
       config: harnessmark.yml
@@ -121,7 +123,7 @@ Read the [Conformance Lock contract](docs/CONFORMANCE_LOCK.md) before using it a
 | prompt evaluator | “How did a model respond?” |
 | **HarnessMark** | **“Does this package match every documented harness contract it claims?”** |
 
-HarnessMark validates the shared [Agent Skills](https://agentskills.io/specification) and [Agent Plugins](https://agent-plugins.org/specification) cores, then applies host-specific rules sourced from Codex, Claude Code, Cursor and GitHub Copilot documentation.
+HarnessMark validates the shared [Agent Skills](https://agentskills.io/specification) and [Agent Plugins](https://agent-plugins.org/specification) cores, then applies host-specific rules sourced from Codex, Claude Code, Cursor, Gemini CLI and GitHub Copilot documentation.
 
 ## Configuration
 
@@ -133,6 +135,7 @@ targets:
   - codex
   - claude-code
   - cursor
+  - gemini-cli
   - github-copilot
 fail_on: error
 ```
@@ -147,7 +150,7 @@ node scripts/run-campaign.js
 node src/cli.js check fixtures/portable-extension --config fixtures/portable-extension/harnessmark.yml
 ```
 
-The campaign includes isolated defects for invalid skill names, mirror drift, path escape, unsupported hooks, ignored Cursor rules and malformed Copilot path instructions. The v1 test suite additionally exercises deterministic locks, tamper rejection, severity-specific drift gates, CLI round-trips and Action lock outputs across the hosted platform matrix.
+The campaign includes isolated defects for invalid skill names, mirror drift, path escape, unsupported hooks, ignored Cursor rules, malformed Copilot path instructions, and Gemini CLI manifest, context-path, and hook-event failures. The v1 test suite additionally exercises deterministic locks, tamper rejection, severity-specific drift gates, CLI round-trips and Action lock outputs across the hosted platform matrix.
 
 See the receipt before treating any unexecuted platform claim as established.
 

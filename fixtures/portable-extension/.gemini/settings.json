@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "BeforeTool": [
+      {
+        "matcher": "write_file|replace",
+        "hooks": [
+          {
+            "name": "release-check",
+            "type": "command",
+            "command": "node hooks/check.mjs",
+            "timeout": 5000
+          }
+        ]
+      }
+    ]
+  }
+}

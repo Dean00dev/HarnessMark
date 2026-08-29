@@ -1,7 +1,7 @@
-export const TOOL_VERSION = "1.0.0";
-export const EVIDENCE_CHECKED_AT = "2026-08-25";
+export const TOOL_VERSION = "1.1.0";
+export const EVIDENCE_CHECKED_AT = "2026-08-29";
 
-export const HOST_ORDER = ["codex", "claude-code", "cursor", "github-copilot"];
+export const HOST_ORDER = ["codex", "claude-code", "cursor", "gemini-cli", "github-copilot"];
 
 export const HOSTS = Object.freeze({
   codex: {
@@ -53,6 +53,20 @@ export const HOSTS = Object.freeze({
       "beforeTabFileRead", "afterTabFileEdit", "workspaceOpen"
     ])
   },
+  "gemini-cli": {
+    label: "Gemini CLI",
+    sources: [
+      "https://geminicli.com/docs/cli/skills/",
+      "https://geminicli.com/docs/cli/gemini-md/",
+      "https://geminicli.com/docs/extensions/reference/",
+      "https://geminicli.com/docs/hooks/"
+    ],
+    hookEvents: new Set([
+      "SessionStart", "SessionEnd", "BeforeAgent", "AfterAgent",
+      "BeforeModel", "AfterModel", "BeforeToolSelection", "BeforeTool",
+      "AfterTool", "PreCompress", "Notification"
+    ])
+  },
   "github-copilot": {
     label: "GitHub Copilot",
     sources: [
@@ -88,5 +102,8 @@ export const RULES = Object.freeze({
   HM041: "Cursor rule uses an ignored extension",
   HM050: "Copilot path instruction is missing applyTo",
   HM051: "Copilot path instruction has invalid excludeAgent",
-  HM060: "Instruction file is empty"
+  HM060: "Instruction file is empty",
+  HM070: "Gemini CLI extension manifest is invalid",
+  HM071: "Gemini CLI context path escapes the extension",
+  HM072: "Gemini CLI context path is not a file"
 });
