@@ -1,0 +1,15 @@
+{
+  "name": "portable-release-guard",
+  "version": "1.0.0",
+  "description": "A release-verification fixture for Gemini CLI.",
+  "contextFileName": "GEMINI.md",
+  "mcpServers": {
+    "release-evidence": {
+      "command": "node",
+      "args": [
+        "${extensionPath}${/}server.mjs"
+      ],
+      "cwd": "${extensionPath}"
+    }
+  }
+}

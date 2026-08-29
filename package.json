@@ -1,6 +1,6 @@
 {
   "name": "harnessmark",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Cross-harness conformance tests for AI-agent skills, plugins, hooks, and instruction packs.",
   "type": "module",
   "bin": {
@@ -34,6 +34,8 @@
     "codex",
     "claude-code",
     "cursor",
+    "gemini-cli",
+    "gemini",
     "github-copilot",
     "conformance-testing",
     "github-actions"

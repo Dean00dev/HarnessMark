@@ -9,7 +9,12 @@ const campaign = [
   { fixture: "invalid/plugin-path-escape", result: "fail", codes: ["HM021"] },
   { fixture: "invalid/unsupported-hook", result: "fail", codes: ["HM031"] },
   { fixture: "invalid/cursor-ignored-rule", result: "warn", codes: ["HM041"] },
-  { fixture: "invalid/copilot-applyto", result: "fail", codes: ["HM050", "HM051"] }
+  { fixture: "invalid/copilot-applyto", result: "fail", codes: ["HM050", "HM051"] },
+  { fixture: "invalid/gemini-hook-event", result: "fail", codes: ["HM031"] },
+  { fixture: "invalid/gemini-extension-path", result: "fail", codes: ["HM071"] },
+  { fixture: "invalid/gemini-extension-manifest", result: "fail", codes: ["HM070"] },
+  { fixture: "invalid/gemini-extension-missing-context", result: "fail", codes: ["HM072"] },
+  { fixture: "invalid/empty-nested-agents", result: "fail", codes: ["HM060"] }
 ];
 
 for (const expected of campaign) {
@@ -23,4 +28,3 @@ for (const expected of campaign) {
 }
 
 process.stdout.write(`\nCampaign passed: ${campaign.length} fixtures, ${campaign.length - 1} negative paths, zero inspected scripts executed.\n`);
-

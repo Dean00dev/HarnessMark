@@ -26,5 +26,8 @@ Every finding links to the first-party source used by its adapter. Severity is p
 | HM050 | error | Copilot path instructions omit their required `applyTo` glob. |
 | HM051 | error | `excludeAgent` is outside GitHub's documented values. |
 | HM060 | error | A discovered instruction body is empty. |
+| HM070 | error | A Gemini CLI extension manifest is malformed or violates documented field constraints. |
+| HM071 | error | A Gemini CLI `contextFileName` is absolute or escapes the extension root. |
+| HM072 | error | A Gemini CLI `contextFileName` does not reference an existing regular file. |
 
 Rules inspect syntax, paths and byte consistency. They do not judge whether prose is correct, useful, safe or followed by a model.

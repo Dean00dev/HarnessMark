@@ -34,7 +34,7 @@ A changed host artifact inventory, target set, core-artifact set, or finding inv
 ## GitHub Action
 
 ```yaml
-- uses: Dean00dev/HarnessMark@v1.0.0
+- uses: Dean00dev/HarnessMark@v1.1.0
   with:
     path: .
     compare-lock: harnessmark.lock.json

@@ -19,7 +19,7 @@ test("conformance lock is deterministic for identical compatibility state", () =
   assert.equal(first, second);
   const parsed = JSON.parse(first);
   assert.match(parsed.contractDigest, /^sha256:[0-9a-f]{64}$/);
-  assert.equal(parsed.tool.version, "1.0.0");
+  assert.equal(parsed.tool.version, "1.1.0");
 });
 
 test("tool version metadata does not change the compatibility contract digest", () => {

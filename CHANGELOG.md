@@ -2,6 +2,17 @@
 
 All notable changes are recorded here.
 
+## 1.1.0 - 2026-08-29
+
+- Add Gemini CLI as a fifth documented-conformance target.
+- Discover `GEMINI.md`, `.agents/skills`, `.gemini/skills`, `gemini-extension.json`, project hooks, and extension hooks.
+- Validate Gemini CLI extension names, versions, MCP metadata constraints, and context-file containment/existence.
+- Validate Gemini CLI hook events without executing configured commands.
+- Extend the portable fixture and Conformance Lock host contract to Gemini CLI.
+- Add isolated negative fixtures for unsupported Gemini hook events and invalid, escaping, or missing extension context metadata.
+- Validate empty nested `AGENTS.md` files that were previously discovered but only checked at repository root.
+- Refresh the first-party evidence ledger on 2026-08-29 while preserving the static-evidence assurance boundary.
+
 ## 1.0.0 - 2026-08-25
 
 - Graduate HarnessMark from the first public alpha to the stable v1 contract.

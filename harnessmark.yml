@@ -5,5 +5,6 @@ targets:
   - codex
   - claude-code
   - cursor
+  - gemini-cli
   - github-copilot
 fail_on: error

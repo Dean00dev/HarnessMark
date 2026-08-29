@@ -10,6 +10,7 @@ targets:
   - codex
   - claude-code
   - cursor
+  - gemini-cli
   - github-copilot
 exclude:
   - vendor
@@ -38,4 +39,3 @@ node src/cli.js check ./extension --format html --output passport.html
 ```
 
 Exit codes are `0` for a result below the selected failure threshold, `1` when the threshold is met, and `2` for CLI misuse.
-
